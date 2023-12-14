@@ -67,7 +67,9 @@ if st.button("Resolver Problema"):
     caminho_percorrido = []
     for var in problema_caixeiro.variables():
         if var.varValue > 0:
-            origem, destino = var.name.split("_para_")
+            origem, destino = var.name.split("para")
+            origem = origem.strip()  # Remova espaços em branco adicionais
+            destino = destino.strip()  # Remova espaços em branco adicionais
             caminho_percorrido.append((origem, destino))
 
     st.write("Caminho Percorrido:")
