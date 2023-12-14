@@ -114,11 +114,11 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
 st.title("Dashboard do Problema do Caixeiro Viajante")
 
 # Obtenção dos dados a partir do Excel
-df_distancias = pd.read_excel("C:/Users/Computador/Downloads/TAPOU3/10 Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
-df_coordenadas = pd.read_excel("C:/Users/Computador/Downloads/TAPOU3/10 Cidades_do_RN - LAT_LONG.xlsx", index_col=0)
+df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
+df_coordenadas = pd.read_excel("10_Cidades_do_RN_-_LAT_LONG.xlsx", index_col=0)
 
 # Carregar o mapa do RN com GeoPandas
-mapa_do_rn = gpd.read_file("C:/Users/Computador/Downloads/TAPOU3/RN_Municipios_2022.shx")
+mapa_do_rn = gpd.read_file("RN_Municipios_2022.shx")
 
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
