@@ -5,3 +5,6 @@ plotly
 python-time
 pulp
 geopandas
+matplotlib
+more_itertools
+datetime
