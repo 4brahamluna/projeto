@@ -1,7 +1,7 @@
 #Caixeiro viajante
 
 #Instalando e importando bibliotecas necessárias
-pip install -r requirements.txt
+
 
 import streamlit as st
 import pandas as pd
