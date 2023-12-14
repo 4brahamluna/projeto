@@ -8,3 +8,4 @@ geopandas
 matplotlib
 more_itertools
 datetime
+openpyxl
