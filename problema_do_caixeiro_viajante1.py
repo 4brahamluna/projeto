@@ -119,7 +119,7 @@ df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", 
 df_coordenadas = pd.read_excel("10_Cidades_do_RN_-_LAT_LONG.xlsx", index_col=0)
 
 # Carregar o mapa do RN com GeoPandas
-mapa_do_rn = gpd.read_file("RN_Municipios_2022.shx")
+mapa_do_rn = gpd.read_file("RN_Municipios_2022.shp")
 
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
