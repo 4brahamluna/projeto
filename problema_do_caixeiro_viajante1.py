@@ -84,7 +84,11 @@ if st.button("Resolver Problema"):
         crs="EPSG:4326"  # Coordenadas lat/lon
     )
 
-    gdf_caminho = gdf_cidades.loc[[origem, destino for origem, destino in caminho_percorrido]]
+    # Extrair origens e destinos do caminho percorrido
+    origens, destinos = zip(*caminho_percorrido)
+
+    # Criar um GeoDataFrame apenas com os locais do caminho percorrido
+    gdf_caminho = gdf_cidades[gdf_cidades.index.isin(origens + destinos)]
 
     # Plotagem do mapa
     fig, ax = plt.subplots(figsize=(10, 10))
