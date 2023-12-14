@@ -9,4 +9,4 @@ matplotlib
 more_itertools
 datetime
 openpyxl
-GDAL==3.3.1
+GDAL
