@@ -4,7 +4,6 @@
 
 import streamlit as st
 import pandas as pd
-import pulp
 import more_itertools
 import geopandas as gpd
 import matplotlib.pyplot as plt
