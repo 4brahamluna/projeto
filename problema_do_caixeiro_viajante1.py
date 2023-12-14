@@ -112,7 +112,7 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
 
 # Interface Streamlit
 st.title("Dashboard do Problema do Caixeiro Viajante")
-st.write("Selecione as cidades a serem percorridas")
+st.write("Selecione as cidades a serem percorridas na sua rota")
 
 # Obtenção dos dados a partir do Excel
 df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
@@ -126,7 +126,7 @@ cidades_disponiveis = df_distancias.index.tolist()
 
 # Caixa de seleção para escolher as cidades
 cidades_selecionadas = st.multiselect("Escolha as cidades", cidades_disponiveis)
-st.write("Abaixo vocÊ verá a rota em um mapa")
+st.write("Abaixo você verá a rota em um mapa")
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
     resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
