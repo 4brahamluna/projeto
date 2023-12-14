@@ -126,7 +126,8 @@ cidades_disponiveis = df_distancias.index.tolist()
 
 # Caixa de seleção para escolher as cidades
 cidades_selecionadas = st.multiselect("Escolha as cidades", cidades_disponiveis)
-
+st.write("Abaixo vocÊ verá a rota em um mapa")
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
     resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
+    
