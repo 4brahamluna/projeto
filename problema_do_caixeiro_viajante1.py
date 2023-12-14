@@ -63,17 +63,17 @@ if st.button("Resolver Problema"):
     st.write("Status da Solução:", pulp.LpStatus[status])
     st.write("Tempo de Resolução:", tempo_final - tempo_inicial)
 
-    # Exibir o caminho percorrido
-    caminho_percorrido = []
-    for var in problema_caixeiro.variables():
-        if var.varValue > 0:
-            origem, destino = var.name.split("para")
-            origem = origem.strip()  # Remova espaços em branco adicionais
-            destino = destino.strip()  # Remova espaços em branco adicionais
-            caminho_percorrido.append((origem, destino))
+  # Exibir o caminho percorrido
+caminho_percorrido = []
+for var in problema_caixeiro.variables():
+    if var.varValue > 0:
+        origem, destino = var.name.split("_para_")
+        origem = origem.strip()
+        destino = destino.strip()
+        caminho_percorrido.append((origem, destino))
 
-    st.write("Caminho Percorrido:")
-    st.write(caminho_percorrido)
+st.write("Caminho Percorrido:")
+st.write(caminho_percorrido)
 
     # Plotar o mapa com o caminho
     # Adapte esta parte com a biblioteca que preferir para plotar mapas
