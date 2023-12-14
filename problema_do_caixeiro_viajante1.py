@@ -13,8 +13,8 @@ from datetime import datetime
 
 # Obtenção dos dados a partir do Excel
 
-df_distancias = pd.read_excel("C:/Users/Computador/Downloads/TAPOU3/10 Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
-df_coordenadas = pd.read_excel("C:/Users/Computador/Downloads/TAPOU3/10 Cidades_do_RN - LAT_LONG.xlsx", index_col=0)
+df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
+df_coordenadas = pd.read_excel("10_Cidades_do_RN_-_LAT_LONG.xlsx", index_col=0)
 #print(df_distancias)
 
 nomes_dos_locais = list(df_distancias.columns.values)
