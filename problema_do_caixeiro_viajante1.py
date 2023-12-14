@@ -108,10 +108,14 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
 
     # Adicione rótulos para o caminho percorrido
     for aresta in caminho_percorrido:
-        origem, destino = aresta
-        origem_coord = (df_coordenadas.loc[origem]["Longitude"], df_coordenadas.loc[origem]["Latitude"])
-        destino_coord = (df_coordenadas.loc[destino]["Longitude"], df_coordenadas.loc[destino]["Latitude"])
-        ax.annotate("", xy=destino_coord, xytext=origem_coord, arrowprops=dict(arrowstyle="->", linewidth=1, color="black"))
+    origem, destino = aresta
+    origem_coord = (df_coordenadas.loc[df_coordenadas.index == origem]["Longitude"].values[0],
+                    df_coordenadas.loc[df_coordenadas.index == origem]["Latitude"].values[0])
+    destino_coord = (df_coordenadas.loc[df_coordenadas.index == destino]["Longitude"].values[0],
+                     df_coordenadas.loc[df_coordenadas.index == destino]["Latitude"].values[0])
+    ax.annotate("", xy=destino_coord, xytext=origem_coord,
+                arrowprops=dict(arrowstyle="->", linewidth=1, color="black"))
+
 
     ax.set_title("Mapa do RN com Caminho Percorrido")
     ax.legend()
