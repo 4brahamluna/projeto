@@ -132,4 +132,129 @@ if st.button("Resolver Problema"):
     for i, local_de_origem in enumerate(cidades_selecionadas):
         for j, local_de_destino in enumerate(cidades_selecionadas):
             if i != j:
-                x_selecionado[i][j
+                x_selecionado[i][j                ] = pulp.LpVariable(
+                    local_de_origem + " para " + local_de_destino, cat='Binary'
+                )
+
+    # Função objetivo para as cidades selecionadas
+    funcao_objetivo_selecionado = 0
+    for i, local_de_origem in enumerate(cidades_selecionadas):
+        for j, local_de_destino in enumerate(cidades_selecionadas):
+            if i != j:
+                funcao_objetivo_selecionado += (
+                    df_distancias_selecionadas.iloc[i, j] * x_selecionado[i][j]
+                )
+
+    # Definir função objetivo para as cidades selecionadas
+    problema_caixeiro_selecionado += funcao_objetivo_selecionado
+
+    # Restrições de saída para as cidades selecionadas
+    for i, local_de_origem in enumerate(cidades_selecionadas):
+        restricao_de_saida_selecionado = 0
+        for j, local_de_destino in enumerate(cidades_selecionadas):
+            if i != j:
+                restricao_de_saida_selecionado += x_selecionado[i][j]
+
+        problema_caixeiro_selecionado += restricao_de_saida_selecionado == 1
+
+    # Restrições de entrada para as cidades selecionadas
+    for j, local_de_destino in enumerate(cidades_selecionadas):
+        restricao_de_entrada_selecionado = 0
+        for i, local_de_origem in enumerate(cidades_selecionadas):
+            if i != j:
+                restricao_de_entrada_selecionado += x_selecionado[i][j]
+
+        problema_caixeiro_selecionado += restricao_de_entrada_selecionado == 1
+
+    # Restrição de eliminação de sub-rota para as cidades selecionadas
+    conjunto_de_locais_selecionados = range(total_de_cidades_selecionadas)
+    for sub_conjunto_selecionado in list(
+        more_itertools.powerset(conjunto_de_locais_selecionados)
+    ):
+        if 2 <= len(sub_conjunto_selecionado) <= total_de_cidades_selecionadas - 1:
+            restricao_subrota_selecionado = 0
+            for i, local_de_origem in enumerate(cidades_selecionadas):
+                if i in sub_conjunto_selecionado:
+                    for j, local_de_destino in enumerate(cidades_selecionadas):
+                        if j in sub_conjunto_selecionado:
+                            restricao_subrota_selecionado += x_selecionado[i][j]
+
+            problema_caixeiro_selecionado += (
+                restricao_subrota_selecionado <= len(sub_conjunto_selecionado) - 1
+            )
+
+    # Resolver modelo para as cidades selecionadas
+    tempo_inicial_selecionado = datetime.now()
+    status_selecionado = problema_caixeiro_selecionado.solve()
+    tempo_final_selecionado = datetime.now()
+
+    # Exibir status da solução
+    st.write("Status da Solução para as cidades selecionadas:", pulp.LpStatus[status_selecionado])
+    st.write("Tempo de Resolução para as cidades selecionadas:", tempo_final_selecionado - tempo_inicial_selecionado)
+
+    # Exibir o caminho percorrido para as cidades selecionadas
+    caminho_percorrido_selecionado = []
+    for i, local_de_origem in enumerate(cidades_selecionadas):
+        for j, local_de_destino in enumerate(cidades_selecionadas):
+            if i != j and pulp.value(x_selecionado[i][j]) > 0:
+                caminho_percorrido_selecionado.append((local_de_origem, local_de_destino))
+
+    st.write("Caminho Percorrido para as cidades selecionadas:")
+    st.write(caminho_percorrido_selecionado)
+
+    # Plotar o mapa com o caminho para as cidades selecionadas
+    # Adapte esta parte com a biblioteca que preferir para plotar mapas
+    # Você pode usar folium, matplotlib basemap toolkit, ou outras opções
+
+    # Exemplo com folium
+
+    # Carregue os dados geográficos do Rio Grande do Norte usando geobr
+    brasil = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
+    rn = brasil.cx[-40:-30, -65:-35]  # Ajuste as coordenadas conforme necessário
+
+    # Crie um GeoDataFrame para as cidades do RN
+    gdf_cidades = gpd.GeoDataFrame(
+        df_coordenadas,
+        geometry=gpd.points_from_xy(df_coordenadas["Longitude"], df_coordenadas["Latitude"]),
+        crs="EPSG:4326"  # Coordenadas lat/lon
+    )
+
+    # Crie um GeoDataFrame para o caminho percorrido
+    caminho_df_selecionado = pd.DataFrame(caminho_percorrido_selecionado, columns=["Origem", "Destino"])
+    gdf_caminho_selecionado = gdf_cidades.merge(
+        caminho_df_selecionado, how="inner", left_on="Cidade", right_on="Origem"
+    )
+
+    # Plotagem do mapa
+    fig_selecionado, ax_selecionado = plt.subplots(figsize=(10, 10))
+    rn.boundary.plot(ax=ax_selecionado, linewidth=2, aspect=1)  # Ajuste o GeoDataFrame para o RN em vez de usar o mundo
+    gdf_cidades.plot(ax=ax_selecionado, color="blue", marker="o", markersize=50, label="Cidades")
+    gdf_caminho_selecionado.plot(
+        ax=ax_selecionado, color="red", linewidth=3, linestyle="-", label="Caminho Percorrido"
+    )
+
+    # Adicione rótulos para as cidades
+    for i, txt in enumerate(df_coordenadas.columns):
+        ax_selecionado.annotate(
+            txt, (df_coordenadas.iloc[i]["Longitude"], df_coordenadas.iloc[i]["Latitude"]), fontsize=8
+        )
+
+    # Adicione rótulos para o caminho percorrido
+    for aresta in caminho_percorrido_selecionado:
+        origem, destino = aresta
+        origem_coord = (
+            df_coordenadas.loc[origem]["Longitude"], df_coordenadas.loc[origem]["Latitude"]
+        )
+        destino_coord = (
+            df_coordenadas.loc[destino]["Longitude"], df_coordenadas.loc[destino]["Latitude"]
+        )
+        ax_selecionado.annotate(
+            "", xy=destino_coord, xytext=origem_coord, arrowprops=dict(arrowstyle="->", linewidth=1, color="black")
+        )
+
+    ax_selecionado.set_title("Mapa do RN com Caminho Percorrido para as cidades selecionadas")
+    ax_selecionado.legend()
+
+    # Exiba o mapa no Streamlit
+    st.pyplot(fig_selecionado)
+
