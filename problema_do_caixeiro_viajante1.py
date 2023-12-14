@@ -125,10 +125,7 @@ st.title("Dashboard do Problema do Caixeiro Viajante")
 st.write("Cidades Disponíveis:")
 
 # Crie um multiselect para que o usuário escolha as cidades
-cidades_selecionadas = st.multiselect("Selecione as cidades:", nomes_dos_locais)
-
-# Selecione o número de cidades para visitar
-num_cidades_a_visitar = st.slider("Selecione o número de cidades para visitar:", 2, total_de_cidades, 5)
+num_cidades_a_visitar = st.multiselect("Selecione as cidades:", nomes_dos_locais)
 
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
