@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pulp
 import more_itertools
 from datetime import datetime
+import openpyxl
 
 def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
     nomes_dos_locais = list(df_distancias.columns.values)
