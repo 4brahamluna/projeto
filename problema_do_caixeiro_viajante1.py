@@ -65,13 +65,18 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
 
     # Exibir o caminho percorrido
     caminho_percorrido = []
+    distancia_total = 0
     for var in problema_caixeiro.variables():
         if var.varValue > 0:
             origem, destino = var.name.split("_para_")
             caminho_percorrido.append((origem, destino))
+            distancia_total += matriz_distancia[nomes_dos_locais.index(origem)][nomes_dos_locais.index(destino)]
 
     st.write("Caminho Percorrido:")
     st.write(caminho_percorrido)
+    
+    # Exibir a distância total
+    st.write(f"Distância Total Percorrida: {distancia_total:.2f} metros")
 
     # Plotar o mapa com o caminho usando GeoPandas
     gdf_cidades = gpd.GeoDataFrame(
@@ -112,7 +117,7 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
 
 # Interface Streamlit
 st.title("Dashboard do Problema do Caixeiro Viajante")
-st.write("Selecione as cidades a serem percorridas na sua rota")
+st.write("Selecione as cidades a serem percorridas")
 
 # Obtenção dos dados a partir do Excel
 df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
@@ -127,7 +132,7 @@ cidades_disponiveis = df_distancias.index.tolist()
 # Caixa de seleção para escolher as cidades
 cidades_selecionadas = st.multiselect("Escolha as cidades", cidades_disponiveis)
 st.write("Abaixo você verá a rota em um mapa")
+
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
     resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
-    
