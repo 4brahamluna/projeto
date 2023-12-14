@@ -118,6 +118,9 @@ st.write("Selecione as cidades a serem percorridas")
 df_distancias = pd.read_excel("10_Distancias_em_metros_das_Cidades_do_RN.xlsx", index_col=0)
 df_coordenadas = pd.read_excel("10_Cidades_do_RN_-_LAT_LONG.xlsx", index_col=0)
 
+# Carregar o mapa do RN com GeoPandas
+mapa_do_rn = gpd.read_file("RN_Municipios_2022.shx")
+
 # Lista de cidades disponíveis
 cidades_disponiveis = df_distancias.index.tolist()
 
