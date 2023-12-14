@@ -20,7 +20,7 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
         for local_de_destino in range(total_de_cidades):
             if local_de_origem != local_de_destino:
                 x[local_de_origem][local_de_destino] = pulp.LpVariable(
-                    nomes_dos_locais[local_de_origem] + " para " + nomes_dos_locais[local_de_destino], cat='Binary'
+                    f"{nomes_dos_locais[local_de_origem]}_para_{nomes_dos_locais[local_de_destino]}", cat='Binary'
                 )
 
     funcao_objetivo = 0
