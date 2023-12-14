@@ -6,7 +6,7 @@ import pulp
 import more_itertools
 from datetime import datetime
 
-def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
+def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas):
     nomes_dos_locais = list(df_distancias.columns.values)
     matriz_distancia = df_distancias.to_numpy()
     total_de_cidades = len(nomes_dos_locais)
@@ -54,6 +54,15 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
                     restricao_subrota += x[local_de_origem][local_de_destino]
             problema_caixeiro += restricao_subrota <= len(sub_conjunto) - 1
 
+    # Restringir caminho às cidades selecionadas
+    cidades_selecionadas_indices = [nomes_dos_locais.index(cidade) for cidade in cidades_selecionadas]
+    restricao_cidades_selecionadas = 0
+    for local_de_origem in range(total_de_cidades):
+        for local_de_destino in range(total_de_cidades):
+            if local_de_origem != local_de_destino and local_de_origem not in cidades_selecionadas_indices and local_de_destino not in cidades_selecionadas_indices:
+                restricao_cidades_selecionadas += x[local_de_origem][local_de_destino]
+    problema_caixeiro += restricao_cidades_selecionadas == 0
+
     # Resolvendo modelo
     tempo_inicial = datetime.now()
     status = problema_caixeiro.solve()
@@ -65,10 +74,10 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn):
 
     # Exibir o caminho percorrido
     caminho_percorrido = []
-    for var in problema_caixeiro.variables():
-        if var.varValue > 0:
-            origem, destino = var.name.split("_para_")
-            caminho_percorrido.append((origem, destino))
+    for local_de_origem in range(total_de_cidades):
+        for local_de_destino in range(total_de_cidades):
+            if local_de_origem != local_de_destino and pulp.value(x[local_de_origem][local_de_destino]) == 1:
+                caminho_percorrido.append((nomes_dos_locais[local_de_origem], nomes_dos_locais[local_de_destino]))
 
     st.write("Caminho Percorrido:")
     st.write(caminho_percorrido)
@@ -120,6 +129,9 @@ df_coordenadas = pd.read_excel("10_Cidades_do_RN_-_LAT_LONG.xlsx", index_col=0)
 # Carregar o mapa do RN com GeoPandas
 mapa_do_rn = gpd.read_file("RN_Municipios_2022.shx")
 
+# Seleção das cidades a serem percorridas
+cidades_selecionadas = st.multiselect("Selecione as cidades a serem percorridas", df_distancias.columns)
+
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
-    resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn)
+    resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
