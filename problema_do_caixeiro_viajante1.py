@@ -6,8 +6,17 @@ import pulp
 import more_itertools
 from datetime import datetime
 
+# Função para calcular a distância total
+def calcular_distancia_total(df_distancias, caminho_percorrido):
+    distancia_total = 0
+    for aresta in caminho_percorrido:
+        origem, destino = aresta
+        distancia_total += df_distancias.loc[origem, destino]
+    return distancia_total
+
+# Função para resolver o problema do caixeiro viajante
 def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas):
-    nomes_dos_locais = cidades_selecionadas  # Usar apenas as cidades selecionadas
+    nomes_dos_locais = cidades_selecionadas
     matriz_distancia = df_distancias.loc[nomes_dos_locais, nomes_dos_locais].to_numpy()
     total_de_cidades = len(nomes_dos_locais)
 
@@ -22,14 +31,6 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
                 x[local_de_origem][local_de_destino] = pulp.LpVariable(
                     nomes_dos_locais[local_de_origem] + "_para_" + nomes_dos_locais[local_de_destino], cat='Binary'
                 )
-
-    funcao_objetivo = 0
-    for local_de_origem in range(total_de_cidades):
-        for local_de_destino in range(total_de_cidades):
-            if local_de_origem != local_de_destino:
-                funcao_objetivo += matriz_distancia[local_de_origem][local_de_destino] * x[local_de_origem][local_de_destino]
-
-    problema_caixeiro += funcao_objetivo
 
     for local_de_origem in range(total_de_cidades):
         restricao_de_saida = 0
@@ -53,6 +54,14 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
                 for local_de_destino in sub_conjunto:
                     restricao_subrota += x[local_de_origem][local_de_destino]
             problema_caixeiro += restricao_subrota <= len(sub_conjunto) - 1
+
+    funcao_objetivo = 0
+    for local_de_origem in range(total_de_cidades):
+        for local_de_destino in range(total_de_cidades):
+            if local_de_origem != local_de_destino:
+                funcao_objetivo += matriz_distancia[local_de_origem][local_de_destino] * x[local_de_origem][local_de_destino]
+
+    problema_caixeiro += funcao_objetivo
 
     # Resolvendo modelo
     tempo_inicial = datetime.now()
@@ -79,7 +88,7 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
         geometry=gpd.points_from_xy(df_coordenadas["Longitude"], df_coordenadas["Latitude"]),
         crs="EPSG:4326"
     )
-    
+
     caminho_df = pd.DataFrame(caminho_percorrido, columns=["Origem", "Destino"])
     gdf_caminho = gdf_cidades.merge(caminho_df, how="inner", left_on="Cidade", right_on="Origem")
 
@@ -110,6 +119,13 @@ def resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidade
     # Exiba o mapa no Streamlit
     st.pyplot(fig)
 
+    # Calcular a distância total
+    distancia_total = calcular_distancia_total(df_distancias, caminho_percorrido)
+    st.write(f"Distância Total Percorrida: {distancia_total} metros")
+
+    # Retornar o status e o caminho percorrido
+    return status, caminho_percorrido
+
 # Interface Streamlit
 st.title("Dashboard do Problema do Caixeiro Viajante")
 st.write("Selecione as cidades a serem percorridas")
@@ -126,18 +142,7 @@ cidades_disponiveis = df_distancias.index.tolist()
 
 # Caixa de seleção para escolher as cidades
 cidades_selecionadas = st.multiselect("Escolha as cidades", cidades_disponiveis)
-st.write("Abaixo vocÊ verá a rota em um mapa")
+
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
     resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
-
-# Botão para calcular a distância total
-if st.button("Calcular Distância Total"):
-    # Resolver o problema do caixeiro viajante
-    status, caminho_percorrido = resolver_problema_caixeiro(df_distancias, cidades_selecionadas)
-
-    # Calcular a distância total
-    distancia_total = calcular_distancia_total(df_distancias, caminho_percorrido)
-
-    # Exibir a distância total
-    st.write("Distância Total Percorrida:", distancia_total, "metros")
