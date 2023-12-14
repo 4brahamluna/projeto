@@ -130,3 +130,14 @@ st.write("Abaixo vocÊ verá a rota em um mapa")
 # Botão para resolver o problema
 if st.button("Resolver Problema"):
     resolver_problema_caixeiro(df_distancias, df_coordenadas, mapa_do_rn, cidades_selecionadas)
+
+# Botão para calcular a distância total
+if st.button("Calcular Distância Total"):
+    # Resolver o problema do caixeiro viajante
+    status, caminho_percorrido = resolver_problema_caixeiro(df_distancias, cidades_selecionadas)
+
+    # Calcular a distância total
+    distancia_total = calcular_distancia_total(df_distancias, caminho_percorrido)
+
+    # Exibir a distância total
+    st.write("Distância Total Percorrida:", distancia_total, "metros")
